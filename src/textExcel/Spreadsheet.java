@@ -49,10 +49,29 @@ public class Spreadsheet implements Grid {
             if (isValidLocation(splitCommand[0])) {
                 Location loc = new SpreadsheetLocation(splitCommand[0]);
                 if (splitCommand.length == 1) {
+                    // value query and return
                     return getCell(loc).fullCellText();
                 } else {
-                    String assignValue = command.split(" = ", 2)[1];
-                    setCell(loc, new TextCell(assignValue));
+                    // value assignment
+                    String assignString = command.split(" = ", 2)[1];
+                    Cell cellValue;
+                    
+                    if (assignString.startsWith("\"") && assignString.endsWith("\"")) {
+                        // assign a text cell
+                        cellValue = new TextCell(assignString);
+                    } else if (assignString.startsWith("(") && assignString.endsWith(")")) {
+                        // assign a formula cell
+                        cellValue = new FormulaCell(assignString);
+                    } else if (assignString.endsWith("%")) {
+                        // assign a percent cell
+                        cellValue = new PercentCell(assignString);
+                    } else if (isValidValue(assignString)) {
+                        cellValue = new ValueCell(assignString);
+                    } else {
+                        return "ERROR: invalid cell value";
+                    }
+                    
+                    setCell(loc, cellValue);
                 }
             } else return "ERROR: invalid cell location";
         }
@@ -84,11 +103,36 @@ public class Spreadsheet implements Grid {
         // true if the last check fails, otherwise false
     }
     
+    /**
+     * Helper method to check whether or not a string is valid to be assigned to a ValueCell
+     * @param string the string to check
+     * @return true if {@code string} is a valid value
+     */
+    private static boolean isValidValue(String string) {
+        for (int i = string.charAt(0) == '-' ? 1 : 0, decimalCounter = 0; i < string.length(); i++) {
+            char c = string.charAt(i);
+            if (!Character.isDigit(c)) {
+                if (c == '.') {
+                    // there should only be one decimal point
+                    if (decimalCounter++ > 1) return false;
+                } else return false;
+            }
+        }
+        // true if checks pass
+        return true;
+    }
+    
+    /**
+     * @return the number of rows in the spreadsheet
+     */
     @Override
     public int getRows() {
         return 20;
     }
     
+    /**
+     * @return the number of columns in the spreadsheet
+     */
     @Override
     public int getCols() {
         return 12;
@@ -110,6 +154,11 @@ public class Spreadsheet implements Grid {
         return Character.toUpperCase(c) - 'A';
     }
     
+    /**
+     * Get the Cell at a location in the spreadsheet
+     * @param loc the location to query
+     * @return the Cell found at the {@code loc}
+     */
     @Override
     public Cell getCell(Location loc) {
         return cells[loc.getRow()][loc.getCol()];
@@ -125,26 +174,26 @@ public class Spreadsheet implements Grid {
     
     @Override
     public String getGridText() {
-        String grid = "   |";
+        StringBuilder grid = new StringBuilder("   |");
         for (int i = 'A'; i < colAsChar(getCols()); i++) {
-            grid += (char) i + "         |";
+            grid.append((char) i).append("         |");
         }
         
-        grid += "\n";
+        grid.append("\n");
         
         for (int i = 1; i <= getRows(); i++) {
             String num = String.valueOf(i);
             num = (num + "  ").substring(0, 3);
-            grid += num + "|";
+            grid.append(num).append("|");
             
             for (int j = 'A'; j < colAsChar(getCols()); j++) {
                 Location loc = new SpreadsheetLocation((char) j + String.valueOf(i));
-                grid += getCell(loc).abbreviatedCellText() + "|";
+                grid.append(getCell(loc).abbreviatedCellText()).append("|");
             }
             
-            grid += "\n";
+            grid.append("\n");
         }
         
-        return grid;
+        return grid.toString();
     }
 }
