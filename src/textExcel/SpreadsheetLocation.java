@@ -18,7 +18,7 @@ public class SpreadsheetLocation implements Location {
     }
     
     public SpreadsheetLocation(String cellName) {
-        this.letter = cellName.charAt(0);
+        this.letter = Character.toUpperCase(cellName.charAt(0));
         this.row = Integer.parseInt(cellName.substring(1)) - 1;
     }
 }

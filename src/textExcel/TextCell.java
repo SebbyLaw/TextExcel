@@ -1,12 +1,20 @@
 package textExcel;
 
-public class EmptyCell implements Cell {
+public class TextCell implements Cell {
+    private final String text;
+    private final String rawText;
+    
+    public TextCell(String text) {
+        this.text = text;
+        this.rawText = text.substring(1, text.length() - 1);
+    }
+    
     /**
      * @return text for spreadsheet cell display, must be exactly length 10
      */
     @Override
     public String abbreviatedCellText() {
-        return "          ";
+        return (rawText + "          ").substring(0, 10);
     }
     
     /**
@@ -14,6 +22,6 @@ public class EmptyCell implements Cell {
      */
     @Override
     public String fullCellText() {
-        return "";
+        return text;
     }
 }
