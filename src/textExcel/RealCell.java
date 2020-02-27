@@ -1,6 +1,6 @@
 package textExcel;
 
-public abstract class RealCell implements Cell, Comparable<RealCell> {
+public abstract class RealCell implements Cell {
     protected final String rawInput;
     
     protected RealCell(String input) {
@@ -20,11 +20,13 @@ public abstract class RealCell implements Cell, Comparable<RealCell> {
     }
     
     @Override
-    public int compareTo(RealCell o) {
-        double thisValue = this.getDoubleValue();
-        double otherValue = o.getDoubleValue();
-        
-        if (thisValue == otherValue) return 0;
-        return thisValue > otherValue ? 1 : -1;
+    public int compareTo(Object o) {
+        if (o instanceof RealCell) {
+            double thisValue = this.getDoubleValue();
+            double otherValue = ((RealCell) o).getDoubleValue();
+    
+            if (thisValue == otherValue) return 0;
+            return thisValue > otherValue ? 1 : -1;
+        } else return 0;
     }
 }

@@ -17,8 +17,17 @@ public class SpreadsheetLocation implements Location {
         return letter - 'A';
     }
     
+    public SpreadsheetLocation(int column, int row) {
+        this.letter = Spreadsheet.colAsChar(column);
+        this.row = row;
+    }
+    
+    public SpreadsheetLocation(char column, int row) {
+        this.letter = Character.toUpperCase(column);
+        this.row = row - 1;
+    }
+    
     public SpreadsheetLocation(String cellName) {
-        this.letter = Character.toUpperCase(cellName.charAt(0));
-        this.row = Integer.parseInt(cellName.substring(1)) - 1;
+        this(cellName.charAt(0), Integer.parseInt(cellName.substring(1)));
     }
 }

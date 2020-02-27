@@ -17,13 +17,13 @@ public class FormulaCell extends RealCell {
     @Override
     public double getDoubleValue() {
         if (equation[0].equalsIgnoreCase("AVG") || equation[0].equalsIgnoreCase("SUM")) {
-            String[] cellRange = equation[1].split("-");
+            String[] cellRange = equation[1].split("-", 2);
             double total = 0;
             int numCells = 0;
             
             for (char c = Character.toUpperCase(cellRange[0].charAt(0)); c <= Character.toUpperCase(cellRange[1].charAt(0)); c++) {
                 for (int i = Integer.parseInt(cellRange[0].substring(1)); i <= Integer.parseInt(cellRange[1].substring(1)); i++) {
-                    total += ((RealCell) spreadsheet.getCell(new SpreadsheetLocation(String.valueOf(c) + i))).getDoubleValue();
+                    total += ((RealCell) spreadsheet.getCell(new SpreadsheetLocation(c, i))).getDoubleValue();
                     numCells++;
                 }
             }
@@ -65,7 +65,7 @@ public class FormulaCell extends RealCell {
                     } else opIndex += 2;  // check the next operator index
                 }
             }
-            return Double.parseDouble(expression.get(0));
+            return parseOperand(expression.get(0));
         }
     }
     

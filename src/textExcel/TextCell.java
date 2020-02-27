@@ -1,7 +1,7 @@
 package textExcel;
 
 
-public class TextCell implements Cell, Comparable<TextCell> {
+public class TextCell implements Cell {
     private final String text;
     private final String rawText;
     
@@ -27,7 +27,8 @@ public class TextCell implements Cell, Comparable<TextCell> {
     }
     
     @Override
-    public int compareTo(TextCell o) {
-        return this.text.compareTo(o.text);
+    public int compareTo(Object o) {
+        if (o instanceof TextCell) return this.text.compareTo(((TextCell) o).text);
+        return 0;
     }
 }

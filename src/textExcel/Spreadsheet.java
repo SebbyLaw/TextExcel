@@ -5,6 +5,9 @@ package textExcel;
 
 // Update this file with your own code.
 
+import java.util.ArrayList;
+import java.util.Collections;
+
 public class Spreadsheet implements Grid {
     private final Cell[][] cells = new Cell[20][12];
     
@@ -44,6 +47,9 @@ public class Spreadsheet implements Grid {
                     // this only creates a new object if the cell is not already empty
                 } else return "ERROR: invalid cell location to clear";
             }
+        } else if (splitCommand[0].toLowerCase().startsWith("sort") && splitCommand[0].length() == 5) {
+            // sort command
+            // TODO: implement
         } else {
             // if it is not a command, it must be value fetching or assignment
             if (isValidLocation(splitCommand[0])) {
@@ -60,12 +66,15 @@ public class Spreadsheet implements Grid {
                         // assign a text cell
                         cellValue = new TextCell(assignString);
                     } else if (assignString.startsWith("( ") && assignString.endsWith(" )")) {
-                        // assign a formula cell
-                        cellValue = new FormulaCell(assignString, this);
+                        // assign a formula cell if valid formula
+                        if (isValidFormula(assignString, loc)) {
+                            cellValue = new FormulaCell(assignString, this);
+                        } else return "ERROR: invalid formula";
                     } else if (assignString.endsWith("%")) {
                         // assign a percent cell
                         cellValue = new PercentCell(assignString);
                     } else if (isValidValue(assignString)) {
+                        // assign a value cell
                         cellValue = new ValueCell(assignString);
                     } else {
                         return "ERROR: invalid cell value";
@@ -104,6 +113,17 @@ public class Spreadsheet implements Grid {
         // row should be within spreadsheet bounds
         return row <= getRows() && row > 0;
         // true if the last check fails, otherwise false
+    }
+    
+    /**
+     * Helper method to check whether or not a string is valid to be assigned to a FormulaCell
+     * @param formula the string to check
+     * @param assignLocation the location that the formula will be assigned to
+     * @return true if {@code string} is a valid formula
+     */
+    private boolean isValidFormula(String formula, Location assignLocation) {
+        // TODO: implement
+        return true;
     }
     
     /**
@@ -189,8 +209,8 @@ public class Spreadsheet implements Grid {
             num = (num + "  ").substring(0, 3);
             grid.append(num).append("|");
             
-            for (int j = 'A'; j < colAsChar(getCols()); j++) {
-                Location loc = new SpreadsheetLocation((char) j + String.valueOf(i));
+            for (char j = 'A'; j < colAsChar(getCols()); j++) {
+                Location loc = new SpreadsheetLocation(j, i);
                 grid.append(getCell(loc).abbreviatedCellText()).append("|");
             }
             
