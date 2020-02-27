@@ -198,8 +198,8 @@ public class Spreadsheet implements Grid {
     @Override
     public String getGridText() {
         StringBuilder grid = new StringBuilder("   |");
-        for (int i = 'A'; i < colAsChar(getCols()); i++) {
-            grid.append((char) i).append("         |");
+        for (char i = 'A'; i < colAsChar(getCols()); i++) {
+            grid.append(i).append("         |");
         }
         
         grid.append("\n");
