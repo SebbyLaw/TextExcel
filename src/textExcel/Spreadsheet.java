@@ -6,7 +6,7 @@ package textExcel;
 // Update this file with your own code.
 
 public class Spreadsheet implements Grid {
-    Cell[][] cells = new Cell[20][12];
+    private final Cell[][] cells = new Cell[20][12];
     
     public Spreadsheet() {
         emptyAllCells();
@@ -59,9 +59,9 @@ public class Spreadsheet implements Grid {
                     if (assignString.startsWith("\"") && assignString.endsWith("\"")) {
                         // assign a text cell
                         cellValue = new TextCell(assignString);
-                    } else if (assignString.startsWith("(") && assignString.endsWith(")")) {
+                    } else if (assignString.startsWith("( ") && assignString.endsWith(" )")) {
                         // assign a formula cell
-                        cellValue = new FormulaCell(assignString);
+                        cellValue = new FormulaCell(assignString, this);
                     } else if (assignString.endsWith("%")) {
                         // assign a percent cell
                         cellValue = new PercentCell(assignString);
@@ -85,12 +85,14 @@ public class Spreadsheet implements Grid {
      * @param string the string to check
      * @return true if {@code string} is a valid location on the spreadsheet
      */
-    private boolean isValidLocation(String string) {
+    public boolean isValidLocation(String string) {
         if (string.length() < 2) return false;
         
         char column = string.charAt(0);
+        // column should be a letter
+        if (!Character.isLetter(column)) return false;
         // column should be within spreadsheet bounds
-        if (colAsInt(column) > getCols()) return false;
+        if (colAsInt(column) > getCols() - 1) return false;
         
         // the rest of the chars should be numeric
         for (int i = 1; i < string.length(); i++) {
@@ -98,8 +100,9 @@ public class Spreadsheet implements Grid {
             if (!Character.isDigit(n)) return false;
         }
         
+        int row = Integer.parseInt(string.substring(1));
         // row should be within spreadsheet bounds
-        return Integer.parseInt(string.substring(1)) <= getRows();
+        return row <= getRows() && row > 0;
         // true if the last check fails, otherwise false
     }
     
@@ -142,7 +145,7 @@ public class Spreadsheet implements Grid {
      * Helper function to convert integer to column char
      * @return the letter of the column in the spreadsheet
      */
-    private static char colAsChar(int n) {
+    public static char colAsChar(int n) {
         return (char) ('A' + n);
     }
     
@@ -150,7 +153,7 @@ public class Spreadsheet implements Grid {
      * Helper function to convert column char to integer
      * @return the uppercase character of the column in the spreadsheet
      */
-    private static int colAsInt(char c) {
+    public static int colAsInt(char c) {
         return Character.toUpperCase(c) - 'A';
     }
     

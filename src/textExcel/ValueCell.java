@@ -13,6 +13,9 @@ public class ValueCell extends RealCell {
         return fullPrecision;
     }
     
+    /**
+     * @return text for spreadsheet cell display, must be exactly length 10
+     */
     @Override
     public String abbreviatedCellText() {
         String abbr;
@@ -22,10 +25,5 @@ public class ValueCell extends RealCell {
             abbr = fullPrecision + "          ";
         }
         return abbr.substring(0, 10);
-    }
-    
-    @Override
-    public String fullCellText() {
-        return rawInput;
     }
 }

@@ -1,6 +1,7 @@
 package textExcel;
 
-public class TextCell implements Cell {
+
+public class TextCell implements Cell, Comparable<TextCell> {
     private final String text;
     private final String rawText;
     
@@ -23,5 +24,10 @@ public class TextCell implements Cell {
     @Override
     public String fullCellText() {
         return text;
+    }
+    
+    @Override
+    public int compareTo(TextCell o) {
+        return this.text.compareTo(o.text);
     }
 }

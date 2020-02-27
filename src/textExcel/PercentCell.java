@@ -13,11 +13,17 @@ public class PercentCell extends RealCell {
         return fullPrecision;
     }
     
+    /**
+     * @return text for spreadsheet cell display, must be exactly length 10
+     */
     @Override
     public String abbreviatedCellText() {
         return (rawInput.split("\\.")[0] + "%         ").substring(0, 10);
     }
     
+    /**
+     * @return text for individual cell inspection, not truncated or padded
+     */
     @Override
     public String fullCellText() {
         return String.valueOf(getDoubleValue());
