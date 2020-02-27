@@ -47,19 +47,14 @@ public class FormulaCell extends RealCell {
                         double secondValue = parseOperand(expression.get(opIndex + 1));
                         double answer;
     
-                        switch (operator) {
-                            case "*":
-                                answer = firstValue * secondValue;
-                                break;
-                            case "/":
-                                answer = firstValue / secondValue;
-                                break;
-                            case "+":
-                                answer = firstValue + secondValue;
-                                break;
-                            default:
-                                answer = firstValue - secondValue;
-                                break;
+                        if ("*".equals(operator)) {
+                            answer = firstValue * secondValue;
+                        } else if ("/".equals(operator)) {
+                            answer = firstValue / secondValue;
+                        } else if ("+".equals(operator)) {
+                            answer = firstValue + secondValue;
+                        } else {
+                            answer = firstValue - secondValue;
                         }
                 
                         expression.set(opIndex - 1, String.valueOf(answer));
