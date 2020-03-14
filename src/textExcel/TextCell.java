@@ -29,6 +29,6 @@ public class TextCell implements Cell {
     @Override
     public int compareTo(Object o) {
         if (o instanceof TextCell) return this.text.compareTo(((TextCell) o).text);
-        return 0;
+        return o instanceof RealCell ? -1 : 0;
     }
 }

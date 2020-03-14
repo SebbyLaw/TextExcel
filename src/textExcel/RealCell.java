@@ -27,6 +27,6 @@ public abstract class RealCell implements Cell {
     
             if (thisValue == otherValue) return 0;
             return thisValue > otherValue ? 1 : -1;
-        } else return 0;
+        } else return o instanceof TextCell ? 1 : 0;
     }
 }

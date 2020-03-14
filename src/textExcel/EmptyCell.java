@@ -19,6 +19,6 @@ public class EmptyCell implements Cell {
     
     @Override
     public int compareTo(Object o) {
-        return 0;
+        return -1;
     }
 }
