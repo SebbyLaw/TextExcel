@@ -88,7 +88,7 @@ public class Spreadsheet implements Grid {
                     
                     setCell(loc, cellValue);
                 }
-            } else return "ERROR: invalid cell location";
+            } else return "ERROR: invalid cell location or command";
         }
         
         return getGridText();
