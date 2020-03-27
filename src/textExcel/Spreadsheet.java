@@ -5,7 +5,9 @@ package textExcel;
 
 // Update this file with your own code.
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 
 public class Spreadsheet implements Grid {
@@ -91,7 +93,7 @@ public class Spreadsheet implements Grid {
                     } else if (assignString.startsWith("( ") && assignString.endsWith(" )")) {
                         // assign a formula cell if valid formula
                         if (isValidFormulaAssignment(assignString)) {
-                            cellValue = new FormulaCell(assignString, this);
+                            cellValue = new FormulaCell(assignString, this, loc);
                         } else return "ERROR: invalid formula";
                     } else if (assignString.endsWith("%")) {
                         // assign a percent cell
@@ -165,6 +167,70 @@ public class Spreadsheet implements Grid {
             }
         }
         
+        return true;
+    }
+    
+    /**
+     * Helper method to check whether or not a formula cell contains a valid formula
+     * @param formulaCell the formula cell to check
+     * @param locations the location the formula cell exists at
+     * @return true if {@code formulaCell} contains a valid formula
+     */
+    public boolean isValidFormula(FormulaCell formulaCell, Location... locations) {
+        String[] equation = formulaCell.getEquation();
+    
+        if (equation[0].equalsIgnoreCase("avg") || equation[0].equalsIgnoreCase("sum")) {
+            // if this is a range formula. all cells in range must be valid
+            for (Cell cell : getCellsInRange(equation[1])) {
+                if (!(cell instanceof RealCell)) return false;
+                if (cell instanceof FormulaCell) {
+                    if (!isValidFormula((FormulaCell) cell, locations)) return false;
+                }
+            }
+        } else {
+            // if this is a regular formula
+            for (int i = 0; i < equation.length; i++) {
+                String term = equation[i];
+                if (i % 2 == 0) {
+                    // checking operands
+                    double termValue;
+                    
+                    if (isValidLocation(term)) {
+                        // this must be a cell reference
+                        Cell cell = getCell(new SpreadsheetLocation(term));
+                        if (cell instanceof RealCell) {
+                            if (cell instanceof FormulaCell) {
+                                Location[] newLocations = new Location[locations.length + 1];
+                                int j = 0;
+                                
+                                FormulaCell reference = (FormulaCell) cell;
+                                Location referenceLocation = reference.getLocation();
+                                for (Location location : locations) {
+                                    if (referenceLocation.getCol() == location.getCol() && referenceLocation.getRow() == location.getRow()) {
+                                        // if it is in the same location as any other formula cell, it is self-referencing
+                                        return false;
+                                    }
+                                    newLocations[j++] = location;
+                                }
+                                
+                                newLocations[j] = referenceLocation;
+                                // each formula cell must be valid as well
+                                if (!isValidFormula(reference, newLocations)) return false;
+                            }
+                            
+                            termValue = ((RealCell) cell).getDoubleValue();
+                        } else return false;  // references must be instances of RealCell
+                    } else termValue = Double.parseDouble(term);
+                    // check division by zero
+                    if (i - 1 > 0 && termValue == 0.0 && equation[i - 1].charAt(0) == '/') return false;
+                } else {
+                    // checking operators
+                    if (term.length() > 1) return false;
+                    char c = term.charAt(0);
+                    if (c != '*' && c != '/' && c != '+' && c != '-') return false;
+                }
+            }
+        }
         return true;
     }
     

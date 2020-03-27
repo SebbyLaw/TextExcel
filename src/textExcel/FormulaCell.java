@@ -9,12 +9,36 @@ import java.util.Arrays;
 public class FormulaCell extends RealCell {
     private final String[] equation;
     private final Spreadsheet spreadsheet;
+    private Location location;
     
-    public FormulaCell(String input, Spreadsheet spreadsheet) {
+    public FormulaCell(String input, Spreadsheet spreadsheet, Location location) {
         super(input);
         equation = input.substring(2, input.length() - 2).split(" ");
         
         this.spreadsheet = spreadsheet;
+        this.location = location;
+    }
+    
+    /**
+     * @return the equation stored in this formula cell
+     */
+    public String[] getEquation() {
+        return this.equation;
+    }
+    
+    /**
+     * @return this cell's location on the spreadsheet
+     */
+    public Location getLocation() {
+        return this.location;
+    }
+    
+    /**
+     * Set the cell's location in the event the cell is moved from it's original location
+     * @param location the new location
+     */
+    public void setLocation(Location location) {
+        this.location = location;
     }
     
     /**
@@ -22,7 +46,8 @@ public class FormulaCell extends RealCell {
      */
     @Override
     public String abbreviatedCellText() {
-        return (getDoubleValue() + "          ").substring(0, 10);
+        if (spreadsheet.isValidFormula(this, location))return (getDoubleValue() + "          ").substring(0, 10);
+        return "#ERROR    ";
     }
     
     @Override
