@@ -285,18 +285,6 @@ public class Spreadsheet implements Grid {
     
     /**
      * Helper method to get the locations of a range
-     * @param range the range to search
-     * @return the cells withing {@code range}
-     */
-    public ArrayList<Location> getRange(String range) {
-        String[] rSplit = range.split("-", 2);
-        Location start = new SpreadsheetLocation(rSplit[0]);
-        Location end = new SpreadsheetLocation(rSplit[1]);
-        return getRange(start, end);
-    }
-    
-    /**
-     * Helper method to get the locations of a range
      * @param start the start of the range, inclusive
      * @param end the end of the range, inclusive
      * @return the cells withing {@code range}
