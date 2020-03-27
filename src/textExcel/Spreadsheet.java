@@ -73,7 +73,7 @@ public class Spreadsheet implements Grid {
                         cellValue = new TextCell(assignString);
                     } else if (assignString.startsWith("( ") && assignString.endsWith(" )")) {
                         // assign a formula cell if valid formula
-                        if (isValidFormula(assignString, loc)) {
+                        if (isValidFormulaAssignment(assignString)) {
                             cellValue = new FormulaCell(assignString, this);
                         } else return "ERROR: invalid formula";
                     } else if (assignString.endsWith("%")) {
@@ -124,11 +124,30 @@ public class Spreadsheet implements Grid {
     /**
      * Helper method to check whether or not a string is valid to be assigned to a FormulaCell
      * @param formula the string to check
-     * @param assignLocation the location that the formula will be assigned to
-     * @return true if {@code string} is a valid formula
+     * @return true if {@code formula} is a valid formula
      */
-    private boolean isValidFormula(String formula, Location assignLocation) {
-        // TODO: implement
+    public boolean isValidFormulaAssignment(String formula) {
+        String[] equation = formula.substring(2, formula.length() - 2).split(" ");
+        
+        if (equation[0].equalsIgnoreCase("avg") || equation[0].equalsIgnoreCase("sum")) {
+            // if the formula contains a function, just make sure the range is proper
+            String[] range = equation[1].split("-", 2);
+            return isValidLocation(range[0]) && isValidLocation(range[1]);
+        }
+        
+        for (int i = 0; i < equation.length; i++) {
+            String term = equation[i];
+            
+            if (i % 2 == 0) {
+                // even terms must be numerical or cells
+                if (!(isValidLocation(term) || isValidValue(term))) return false;
+            } else {
+                // odd terms must be operators
+                char op = term.charAt(0);
+                if (!(term.length() == 1 && (op == '*' || op == '/' || op == '+' || op == '-'))) return false;
+            }
+        }
+        
         return true;
     }
     
