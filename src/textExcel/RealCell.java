@@ -1,22 +1,12 @@
 package textExcel;
 
-public abstract class RealCell implements Cell {
-    protected final String rawInput;
-    
+public abstract class RealCell extends BaseCell {
     protected RealCell(String input) {
-        this.rawInput = input;
+        super(input);
     }
     
     public double getDoubleValue() {
         return 0;
-    }
-    
-    /**
-     * @return text for individual cell inspection, not truncated or padded
-     */
-    @Override
-    public String fullCellText() {
-        return rawInput;
     }
     
     @Override

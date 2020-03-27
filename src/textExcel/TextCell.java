@@ -1,13 +1,12 @@
 package textExcel;
 
 
-public class TextCell implements Cell {
-    private final String text;
-    private final String rawText;
+public class TextCell extends BaseCell {
+    private final String noParentheses;
     
-    public TextCell(String text) {
-        this.text = text;
-        this.rawText = text.substring(1, text.length() - 1);
+    public TextCell(String input) {
+        super(input);
+        this.noParentheses = input.substring(1, input.length() - 1);
     }
     
     /**
@@ -15,20 +14,12 @@ public class TextCell implements Cell {
      */
     @Override
     public String abbreviatedCellText() {
-        return (rawText + "          ").substring(0, 10);
-    }
-    
-    /**
-     * @return text for individual cell inspection, not truncated or padded
-     */
-    @Override
-    public String fullCellText() {
-        return text;
+        return (noParentheses + "          ").substring(0, 10);
     }
     
     @Override
     public int compareTo(Object o) {
-        if (o instanceof TextCell) return this.text.compareTo(((TextCell) o).text);
+        if (o instanceof TextCell) return this.rawInput.compareTo(((TextCell) o).rawInput);
         return o instanceof RealCell ? -1 : 0;
     }
 }
