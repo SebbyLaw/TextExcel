@@ -57,10 +57,7 @@ public class Spreadsheet implements Grid {
             // sort command
             char sortType = Character.toUpperCase(splitCommand[0].charAt(4));
             if (sortType == 'A' || sortType == 'D') {
-                String[] range = splitCommand[1].split("-", 2);
-                Location start = new SpreadsheetLocation(range[0]);
-                Location end = new SpreadsheetLocation(range[1]);
-                sort(start, end, sortType == 'A');
+                this.sort(splitCommand[1], sortType == 'A');
             } else return "ERROR: invalid sort type";
         } else if (splitCommand[0].equalsIgnoreCase("history")) {
             // history command
@@ -205,11 +202,20 @@ public class Spreadsheet implements Grid {
         return true;
     }
     
-    private void sort(Location start, Location end, boolean ascending) {
-        ArrayList<Cell> sortedRange = new ArrayList<Cell>(getCellsInRange(start, end)){{
-            sort(ascending ? null : Collections.reverseOrder());
+    /**
+     * Sorts a range of cells on this spreadsheet
+     * @param range the range of cells to sort
+     * @param ascending whether or not to sort by ascending order
+     */
+    private void sort(String range, boolean ascending) {
+        ArrayList<Cell> sortedRange = new ArrayList<Cell>(getCellsInRange(range)){{
+            // this is not recursion, just an anonymous inner class
+            this.sort(ascending ? null : Collections.reverseOrder());
         }};
         
+        String[] rSplit = range.split("-");
+        Location start = new SpreadsheetLocation(rSplit[0]);
+        Location end = new SpreadsheetLocation(rSplit[1]);
         for (int i = start.getRow(), k = 0; i <= end.getRow(); i++) {
             for (int j = start.getCol(); j <= end.getCol(); j++) {
                 setCell(new SpreadsheetLocation(j, i), sortedRange.get(k++));
@@ -261,18 +267,6 @@ public class Spreadsheet implements Grid {
     
     /**
      * Helper method to get cells in a range
-     * @param start the start of the range, inclusive
-     * @param end the end of the range, inclusive
-     * @return the cells withing {@code range}
-     */
-    public ArrayList<Cell> getCellsInRange(Location start, Location end) {
-        return new ArrayList<Cell>() {{
-            for (Location loc : getRange(start, end)) add(getCell(loc));
-        }};
-    }
-    
-    /**
-     * Helper method to get cells in a range
      * @param range the range to search
      * @return the cells withing {@code range}
      */
@@ -280,7 +274,9 @@ public class Spreadsheet implements Grid {
         String[] rSplit = range.split("-", 2);
         Location start = new SpreadsheetLocation(rSplit[0]);
         Location end = new SpreadsheetLocation(rSplit[1]);
-        return getCellsInRange(start, end);
+        return new ArrayList<Cell>() {{
+            for (Location loc : getRange(start, end)) add(getCell(loc));
+        }};
     }
     
     /**
