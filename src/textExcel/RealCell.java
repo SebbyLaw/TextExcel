@@ -1,3 +1,6 @@
+// Sebastian Law
+// 2020.3.27
+
 package textExcel;
 
 public abstract class RealCell extends BaseCell {
