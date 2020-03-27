@@ -1,5 +1,5 @@
 // Sebastian Law
-// 2020.2.24
+// 2020.3.27
 
 package textExcel;
 
@@ -9,6 +9,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 public class Spreadsheet implements Grid {
+    private ArrayList<String> history = new ArrayList<>();
+    private boolean recordingHistory = false;
+    private int historyMaxSize = 1;
     private final Cell[][] cells = new Cell[20][12];
     
     public Spreadsheet() {
@@ -29,8 +32,13 @@ public class Spreadsheet implements Grid {
     @Override
     public String processCommand(String command) {
         if (command.trim().isEmpty()) return "";  // don't even touch input if nothing
-        
         String[] splitCommand = command.split(" ");
+        
+        // recording command history
+        if (recordingHistory && !splitCommand[0].equalsIgnoreCase("history")) {
+            history.add(0, command);
+            if (history.size() > historyMaxSize) history.remove(history.size() - 1);
+        }
         
         // commands if-else chain monster
         if (splitCommand[0].equalsIgnoreCase("clear")) {
@@ -54,6 +62,20 @@ public class Spreadsheet implements Grid {
                 Location end = new SpreadsheetLocation(range[1]);
                 sort(start, end, sortType == 'A');
             } else return "ERROR: invalid sort type";
+        } else if (splitCommand[0].equalsIgnoreCase("history")) {
+            // history command
+            if (splitCommand[1].equalsIgnoreCase("start")) {
+                historyMaxSize = Integer.parseInt(splitCommand[2]);
+                recordingHistory = true;
+            } else if (splitCommand[1].equalsIgnoreCase("clear")) {
+                for (int i = 0; i < Integer.parseInt(splitCommand[2]); i++) {
+                    if (!history.isEmpty()) history.remove(history.size() - 1);
+                }
+            } else if (splitCommand[1].equalsIgnoreCase("stop")) {
+                history.clear();
+                recordingHistory = false;
+            } else return String.join("\n", history);  // history display command
+            return "";
         } else {
             // if it is not a command, it must be value fetching or assignment
             if (isValidLocation(splitCommand[0])) {
