@@ -133,6 +133,21 @@ public class Spreadsheet implements Grid {
     }
     
     /**
+     * Helper method to parse the value of a cell reference or double
+     * @param value the string value to parse
+     * @return the double value of the reference
+     */
+    public double parseOperand(String value) {
+        if (isValidLocation(value)) {
+            Cell cell = getCell(new SpreadsheetLocation(value));
+            // assume all casting issues will be dealt with elsewhere
+            return ((RealCell) cell).getDoubleValue();
+        } else {
+            return Double.parseDouble(value);
+        }
+    }
+    
+    /**
      * Helper method to check whether or not a string is valid to be assigned to a ValueCell
      * @param string the string to check
      * @return true if {@code string} is a valid value
