@@ -5,9 +5,7 @@ package textExcel;
 
 // Update this file with your own code.
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 
 public class Spreadsheet implements Grid {
