@@ -21,8 +21,6 @@ public class Spreadsheet implements Grid {
     private void emptyAllCells() {
         for (int i = 0; i < getRows(); i++) {
             for (int j = 0; j < getCols(); j++) {
-                // instead of creating new objects willy-nilly
-                // we only do it if they are not empty, thus saving processing speed
                 if (!(cells[i][j] instanceof EmptyCell)) cells[i][j] = new EmptyCell();
             }
         }
