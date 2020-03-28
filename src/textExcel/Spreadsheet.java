@@ -152,9 +152,8 @@ public class Spreadsheet implements Grid {
         if (column - 'A' > getCols() - 1) return false;
         
         // the rest of the chars should be numeric
-        for (int i = 1; i < string.length(); i++) {
-            char n = string.charAt(i);
-            if (!Character.isDigit(n)) return false;
+        for (char c : string.substring(1).toCharArray()) {
+            if (!Character.isDigit(c)) return false;
         }
         
         int row = Integer.parseInt(string.substring(1));
