@@ -220,7 +220,7 @@ public class Spreadsheet implements Grid {
                     
                     if (isValidLocation(term)) {
                         // this must be a cell reference
-                        Cell cell = getCell(new SpreadsheetLocation(term));
+                        Cell cell = getCell(term);
                         if (cell instanceof RealCell) {
                             if (cell instanceof FormulaCell) {
                                 Location[] newLocations = new Location[locations.length + 1];
@@ -264,7 +264,7 @@ public class Spreadsheet implements Grid {
      */
     public double parseOperand(String value) {
         if (isValidLocation(value)) {
-            Cell cell = getCell(new SpreadsheetLocation(value));
+            Cell cell = getCell(value);
             // assume all casting issues will be dealt with elsewhere
             return ((RealCell) cell).getDoubleValue();
         } else {
@@ -336,6 +336,15 @@ public class Spreadsheet implements Grid {
     @Override
     public Cell getCell(Location loc) {
         return cells[loc.getRow()][loc.getCol()];
+    }
+    
+    /**
+     * Get the Cell at a location in the spreadsheet
+     * @param loc the location to query
+     * @return the Cell found at the {@code loc}
+     */
+    public Cell getCell(String loc) {
+        return getCell(new SpreadsheetLocation(loc));
     }
     
     /**
