@@ -356,7 +356,7 @@ public class Spreadsheet implements Grid {
         Location start = new SpreadsheetLocation(rSplit[0]);
         Location end = new SpreadsheetLocation(rSplit[1]);
         return new ArrayList<Cell>() {{
-            for (Location loc : getRange(start, end)) add(getCell(loc));
+            for (Location loc : getLocationsInRange(start, end)) add(getCell(loc));
         }};
     }
     
@@ -366,7 +366,7 @@ public class Spreadsheet implements Grid {
      * @param end the end of the range, inclusive
      * @return the cells withing {@code range}
      */
-    public static ArrayList<Location> getRange(Location start, Location end) {
+    public static ArrayList<Location> getLocationsInRange(Location start, Location end) {
         return new ArrayList<Location>() {{
             for (int row = start.getRow(); row <= end.getRow(); row++) {
                 for (int col = start.getCol(); col <= end.getCol(); col++) {
