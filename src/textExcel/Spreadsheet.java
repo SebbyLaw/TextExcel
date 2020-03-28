@@ -3,8 +3,6 @@
 
 package textExcel;
 
-// Update this file with your own code.
-
 import java.util.ArrayList;
 import java.util.Collections;
 
@@ -12,10 +10,36 @@ public class Spreadsheet implements Grid {
     private ArrayList<String> history = new ArrayList<>();
     private boolean recordingHistory = false;
     private int historyMaxSize = 1;
-    private final Cell[][] cells = new Cell[20][12];
+    
+    private final Cell[][] cells;
+    private final int numRows;
+    private final int numCols;
+    
+    public Spreadsheet(int rows, int columns) {
+        this.numRows = rows;
+        this.numCols = columns;
+        cells = new Cell[rows][columns];
+        emptyAllCells();
+    }
     
     public Spreadsheet() {
-        emptyAllCells();
+        this(20, 12);
+    }
+    
+    /**
+     * @return the number of rows in the spreadsheet
+     */
+    @Override
+    public int getRows() {
+        return this.numRows;
+    }
+    
+    /**
+     * @return the number of columns in the spreadsheet
+     */
+    @Override
+    public int getCols() {
+        return this.numCols;
     }
     
     /**
@@ -24,6 +48,7 @@ public class Spreadsheet implements Grid {
     private void emptyAllCells() {
         for (int i = 0; i < getRows(); i++) {
             for (int j = 0; j < getCols(); j++) {
+                // check if it is already empty first, so we don't unnecessarily create new objects
                 if (!(cells[i][j] instanceof EmptyCell)) cells[i][j] = new EmptyCell();
             }
         }
@@ -288,22 +313,6 @@ public class Spreadsheet implements Grid {
     }
     
     /**
-     * @return the number of rows in the spreadsheet
-     */
-    @Override
-    public int getRows() {
-        return 20;
-    }
-    
-    /**
-     * @return the number of columns in the spreadsheet
-     */
-    @Override
-    public int getCols() {
-        return 12;
-    }
-    
-    /**
      * Helper function to convert integer to column char
      * @return the letter of the column in the spreadsheet
      */
@@ -327,6 +336,14 @@ public class Spreadsheet implements Grid {
     @Override
     public Cell getCell(Location loc) {
         return cells[loc.getRow()][loc.getCol()];
+    }
+    
+    /**
+     * @param loc the location in the spreadsheet to set
+     * @param cell the cell to set at the {@code location}
+     */
+    private void setCell(Location loc, Cell cell) {
+        cells[loc.getRow()][loc.getCol()] = cell;
     }
     
     /**
@@ -360,13 +377,8 @@ public class Spreadsheet implements Grid {
     }
     
     /**
-     * @param loc the location in the spreadsheet to set
-     * @param cell the cell to set at the {@code location}
+     * @return the current state of the spreadsheet in grid text form for display
      */
-    private void setCell(Location loc, Cell cell) {
-        cells[loc.getRow()][loc.getCol()] = cell;
-    }
-    
     @Override
     public String getGridText() {
         StringBuilder grid = new StringBuilder("   |");
