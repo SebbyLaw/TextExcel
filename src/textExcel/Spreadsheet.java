@@ -145,11 +145,11 @@ public class Spreadsheet implements Grid {
     public boolean isValidLocation(String string) {
         if (string.length() < 2) return false;
         
-        char column = string.charAt(0);
+        char column = Character.toUpperCase(string.charAt(0));
         // column should be a letter
         if (!Character.isLetter(column)) return false;
         // column should be within spreadsheet bounds
-        if (colAsInt(column) > getCols() - 1) return false;
+        if (column - 'A' > getCols() - 1) return false;
         
         // the rest of the chars should be numeric
         for (int i = 1; i < string.length(); i++) {
@@ -160,7 +160,6 @@ public class Spreadsheet implements Grid {
         int row = Integer.parseInt(string.substring(1));
         // row should be within spreadsheet bounds
         return row <= getRows() && row > 0;
-        // true if the last check fails, otherwise false
     }
     
     /**
@@ -298,34 +297,15 @@ public class Spreadsheet implements Grid {
      */
     private void sort(String range, boolean ascending) {
         ArrayList<Cell> sortedRange = new ArrayList<Cell>(getCellsInRange(range)){{
-            // this is not recursion, just an anonymous inner class
             this.sort(ascending ? null : Collections.reverseOrder());
         }};
         
-        String[] rSplit = range.split("-");
-        Location start = new SpreadsheetLocation(rSplit[0]);
-        Location end = new SpreadsheetLocation(rSplit[1]);
-        for (int i = start.getRow(), k = 0; i <= end.getRow(); i++) {
-            for (int j = start.getCol(); j <= end.getCol(); j++) {
-                setCell(new SpreadsheetLocation(j, i), sortedRange.get(k++));
-            }
+        int count = 0;
+        for (Location loc : getLocationsInRange(range)) {
+            Cell cell = sortedRange.get(count++);
+            this.setCell(loc, cell);
+            if (cell instanceof FormulaCell) ((FormulaCell) cell).setLocation(loc);
         }
-    }
-    
-    /**
-     * Helper function to convert integer to column char
-     * @return the letter of the column in the spreadsheet
-     */
-    public static char colAsChar(int n) {
-        return (char) ('A' + n);
-    }
-    
-    /**
-     * Helper function to convert column char to integer
-     * @return the uppercase character of the column in the spreadsheet
-     */
-    public static int colAsInt(char c) {
-        return Character.toUpperCase(c) - 'A';
     }
     
     /**
@@ -361,21 +341,20 @@ public class Spreadsheet implements Grid {
      * @return the cells withing {@code range}
      */
     public ArrayList<Cell> getCellsInRange(String range) {
-        String[] rSplit = range.split("-", 2);
-        Location start = new SpreadsheetLocation(rSplit[0]);
-        Location end = new SpreadsheetLocation(rSplit[1]);
         return new ArrayList<Cell>() {{
-            for (Location loc : getLocationsInRange(start, end)) add(getCell(loc));
+            for (Location loc : getLocationsInRange(range)) add(getCell(loc));
         }};
     }
     
     /**
      * Helper method to get the locations of a range
-     * @param start the start of the range, inclusive
-     * @param end the end of the range, inclusive
+     * @param range the range to search
      * @return the cells withing {@code range}
      */
-    public static ArrayList<Location> getLocationsInRange(Location start, Location end) {
+    public static ArrayList<Location> getLocationsInRange(String range) {
+        String[] rSplit = range.split("-", 2);
+        Location start = new SpreadsheetLocation(rSplit[0]);
+        Location end = new SpreadsheetLocation(rSplit[1]);
         return new ArrayList<Location>() {{
             for (int row = start.getRow(); row <= end.getRow(); row++) {
                 for (int col = start.getCol(); col <= end.getCol(); col++) {
@@ -390,26 +369,19 @@ public class Spreadsheet implements Grid {
      */
     @Override
     public String getGridText() {
-        StringBuilder grid = new StringBuilder("   |");
-        for (char i = 'A'; i < colAsChar(getCols()); i++) {
-            grid.append(i).append("         |");
-        }
+        StringBuilder gridText = new StringBuilder("   |");
+        // draw the columns header
+        for (char col = 'A'; col < (char) getCols() + 'A'; col++) gridText.append(col).append("         |");
+        gridText.append("\n");
         
-        grid.append("\n");
-        
-        for (int i = 1; i <= getRows(); i++) {
-            String num = String.valueOf(i);
-            num = (num + "  ").substring(0, 3);
-            grid.append(num).append("|");
-            
-            for (char j = 'A'; j < colAsChar(getCols()); j++) {
-                Location loc = new SpreadsheetLocation(j, i);
-                grid.append(getCell(loc).abbreviatedCellText()).append("|");
+        for (int row = 1; row <= getRows(); row++) {
+            String num = (row + "  ").substring(0, 3);
+            gridText.append(num).append("|");
+            for (char col = 'A'; col < (char) getCols() + 'A'; col++) {
+                gridText.append(getCell(new SpreadsheetLocation(col, row)).abbreviatedCellText()).append("|");
             }
-            
-            grid.append("\n");
+            gridText.append("\n");
         }
-        
-        return grid.toString();
+        return gridText.toString();
     }
 }
