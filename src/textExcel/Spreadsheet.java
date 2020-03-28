@@ -368,9 +368,9 @@ public class Spreadsheet implements Grid {
      */
     public ArrayList<Location> getRange(Location start, Location end) {
         return new ArrayList<Location>() {{
-            for (int i = start.getCol(); i <= end.getCol(); i++) {
-                for (int j = start.getRow(); j <= end.getRow(); j++) {
-                    add(new SpreadsheetLocation(i, j));
+            for (int row = start.getRow(); row <= end.getRow(); row++) {
+                for (int col = start.getCol(); col <= end.getCol(); col++) {
+                    add(new SpreadsheetLocation(col, row));
                 }
             }
         }};
